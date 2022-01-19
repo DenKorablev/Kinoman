@@ -101,8 +101,8 @@ export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
           </div>
 
           <section class="film-details__controls">
-            <button type="button" class="film-details__control-button film-details__control-button--watchlist ${getActiveClassName(alreadyWatched)}" id="watchlist" name="watchlist">Add to watchlist</button>
-            <button type="button" class="film-details__control-button film-details__control-button--watched ${getActiveClassName(watchlist)}" id="watched" name="watched">Already watched</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watchlist ${getActiveClassName(watchlist)}" id="watchlist" name="watchlist">Add to watchlist</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watched ${getActiveClassName(alreadyWatched)}" id="watched" name="watched">Already watched</button>
             <button type="button" class="film-details__control-button film-details__control-button--favorite ${getActiveClassName(favorite)}" id="favorite" name="favorite">Add to favorites</button>
           </section>
         </div>
