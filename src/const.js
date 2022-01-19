@@ -2,8 +2,9 @@ const DATE_FORMAT = {
   YEAR: 'YYYY',
   DURATION_HM: 'H[h] m[m]',
   DATE_HOUR: 'DD/MM/YY HH:mm',
+  DATE: 'DD MMMM YYYY'
 };
 
-const EMOTION = ['smile', 'sleeping', 'puke', 'angry'];
+const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
-export { DATE_FORMAT, EMOTION };
+export { DATE_FORMAT, EMOTIONS };

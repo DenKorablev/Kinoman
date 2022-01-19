@@ -1,4 +1,4 @@
-import { DATE_FORMAT } from '../const.js';
+import { DATE_FORMAT, EMOTIONS } from '../const.js';
 import { COMMENTS } from '../mock/data.js';
 import { dateConverter, durationConverter } from '../util.js';
 
@@ -33,10 +33,22 @@ const createCommentsContainer = (comments) => comments.length ? `
   }).join(' ')}
   </ul>` : '';
 
+const createEmotionListContainer = () => `
+  <div class="film-details__emoji-list">
+  ${EMOTIONS.map((em) =>
+    `
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${em}" value="${em}">
+      <label class="film-details__emoji-label" for="emoji-${em}">
+        <img src="./images/emoji/${em}.png" width="30" height="30" alt="emoji">
+      </label>
+    `
+  ).join(' ')}
+  </div>`;
+
 export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
   const { title, alternativeTitle, totalRating, ageRating, director, writers, actors, runtime, release, genre, poster, description } = filmInfo;
   const { favorite, alreadyWatched, watchlist } = userDetails;
-  const releaseYear = dateConverter(release.date, 'DD MMMM YYYY');
+  const releaseYear = dateConverter(release.date, DATE_FORMAT.DATE);
   const durationFilm = durationConverter(runtime, DATE_FORMAT.DURATION_HM);
 
   return `
@@ -110,37 +122,14 @@ export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-
             ${createCommentsContainer(comments)}
-
             <div class="film-details__new-comment">
               <div class="film-details__add-emoji-label"></div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
               </label>
-
-              <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-                <label class="film-details__emoji-label" for="emoji-smile">
-                  <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                <label class="film-details__emoji-label" for="emoji-sleeping">
-                  <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-                <label class="film-details__emoji-label" for="emoji-puke">
-                  <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-                <label class="film-details__emoji-label" for="emoji-angry">
-                  <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-                </label>
-              </div>
+              ${createEmotionListContainer(comments)}
             </div>
           </section>
         </div>

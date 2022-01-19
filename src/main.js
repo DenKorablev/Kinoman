@@ -6,7 +6,7 @@ import { createPopupTemplate } from './view/popup.js';
 import { createStatisticsTemplate } from './view/statistics.js';
 import { generateFilms } from './mock/data.js';
 
-const FILMS_COUNT = 15;
+const FILMS_COUNT = 30;
 const EXTRA_COUNT = 2;
 
 const filmsData = new Array(FILMS_COUNT).fill().map(generateFilms);
@@ -25,10 +25,10 @@ const render = (container, template, place = 'beforeend') => {
 
 const siteBodyElement = document.querySelector('body');
 const headerElement = siteBodyElement.querySelector('.header');
-render(headerElement, createProfileTemplate());
+render(headerElement, createProfileTemplate(filmsData));
 
 const mainElement = siteBodyElement.querySelector('.main');
-render(mainElement, createMenuTemplate());
+render(mainElement, createMenuTemplate(filmsData));
 
 const filmsListElement = mainElement.querySelector('.films-list');
 const filmsListExtraElement = mainElement.querySelectorAll('.films-list--extra');
@@ -49,8 +49,8 @@ for(let i = 0; i < commentedFilms.length; i++) {
 }
 render(allFilmsListElement, createShowMoreButtonTemplate());
 
-render(siteBodyElement, createPopupTemplate(filmsData[0]));
+/* render(siteBodyElement, createPopupTemplate(filmsData[0])); */
 
 const footerStaisticsElement = siteBodyElement.querySelector('.footer__statistics');
-render(footerStaisticsElement, createStatisticsTemplate());
+render(footerStaisticsElement, createStatisticsTemplate(filmsData));
 
