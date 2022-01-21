@@ -1,5 +1,5 @@
 import { DATE_FORMAT } from '../const.js';
-import { dateConverter, durationConverter } from '../util.js';
+import { dateConverter, durationConverter, createElement } from '../util.js';
 
 const getActiveClassName = (condition) => condition ? 'film-card__controls-item--active' : '';
 
@@ -31,3 +31,26 @@ export const createFilmCardTemplate = ({comments, filmInfo, userDetails}) => {
     </article>
   `;
 };
+
+export default class FilmCard {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCardTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

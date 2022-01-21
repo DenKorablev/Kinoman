@@ -2,6 +2,11 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
+const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
 const getRandomInt = (min = 0, max = 1) => {
   if (max < min) {
     [min, max] = [max, min];
@@ -36,4 +41,35 @@ const randomeDate = () => dayjs().subtract(getRandomInt(1, 99999), 'm').toDate()
 const dateConverter = (date, formate) => dayjs(date).format(formate);
 const durationConverter = (time, formate) => dayjs.duration(time, 'm').format(formate);
 
-export { getRandomInt, getRandomFloat, getRandomArrayElement, makeRandomArrayGenerator, dateConverter, durationConverter, randomeDate };
+const render = (container, element, place = RenderPosition.BEFOREEND) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+  return newElement.firstElementChild;
+};
+
+const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export {
+  getRandomInt,
+  getRandomFloat,
+  getRandomArrayElement,
+  makeRandomArrayGenerator,
+  dateConverter,
+  durationConverter,
+  randomeDate,
+  RenderPosition,
+  render,
+  createElement,
+  isEscEvent
+};

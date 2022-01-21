@@ -1,6 +1,6 @@
 import { DATE_FORMAT, EMOTIONS } from '../const.js';
 import { COMMENTS } from '../mock/data.js';
-import { dateConverter, durationConverter } from '../util.js';
+import { dateConverter, durationConverter, createElement } from '../util.js';
 
 const getActiveClassName = (condition) => condition ? 'film-details__control-button--active' : '';
 
@@ -137,3 +137,26 @@ export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
     </section>
   `;
 };
+
+export default class Popup {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPopupTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
