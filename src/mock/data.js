@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { EMOTION } from '../const.js';
+import { EMOTIONS } from '../const.js';
 import { getRandomInt, getRandomFloat, getRandomArrayElement, makeRandomArrayGenerator, randomeDate } from '../util.js';
 
 const YEAR_IN_MINUTES = 525600;
@@ -9,35 +9,35 @@ const COMMENTS = [
     id: 0,
     author: 'Илюха',
     comment: 'Отличный фильм',
-    emotion: getRandomArrayElement(EMOTION),
+    emotion: getRandomArrayElement(EMOTIONS),
     date: randomeDate()
   },
   {
     id: 1,
     author: 'Петя',
     comment: 'Ужасно',
-    emotion: getRandomArrayElement(EMOTION),
+    emotion: getRandomArrayElement(EMOTIONS),
     date: randomeDate()
   },
   {
     id: 2,
     author: 'Илюха',
     comment: 'Супер фильм',
-    emotion: getRandomArrayElement(EMOTION),
+    emotion: getRandomArrayElement(EMOTIONS),
     date: randomeDate()
   },
   {
     id: 3,
     author: 'Маша',
     comment: 'Было смешно',
-    emotion: getRandomArrayElement(EMOTION),
+    emotion: getRandomArrayElement(EMOTIONS),
     date: randomeDate()
   },
   {
     id: 4,
     author: 'Саша',
     comment: 'Советую!!!',
-    emotion: getRandomArrayElement(EMOTION),
+    emotion: getRandomArrayElement(EMOTIONS),
     date: randomeDate()
   },
   {
