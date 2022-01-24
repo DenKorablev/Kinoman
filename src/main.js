@@ -34,17 +34,17 @@ const renderFilms = (list, film) => {
   const filmComponent = new FilmCardView(film);
   const popupComponent = new PopupView(film);
 
-  const closePopup = () => {
-    siteBodyElement.classList.remove('hide-overflow');
-    siteBodyElement.removeChild(popupComponent.getElement());
-  };
-
   const onEscKeydown = (evt) => {
     if (isEscEvent(evt)) {
       evt.preventDefault();
       closePopup();
-      document.addEventListener('keydown', onEscKeydown);
     }
+  };
+
+  const closePopup = () => {
+    siteBodyElement.classList.remove('hide-overflow');
+    siteBodyElement.removeChild(popupComponent.getElement());
+    document.removeEventListener('keydown', onEscKeydown);
   };
 
   const openPopup = () => {

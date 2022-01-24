@@ -30,7 +30,7 @@ const makeRandomArrayGenerator = (array) => {
 };
 
 
-const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+const isEscEvent = (evt) => evt.key === ('Escape' || 'Esc');
 
 export {
   getRandomInt,

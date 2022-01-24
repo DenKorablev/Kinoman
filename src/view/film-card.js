@@ -1,6 +1,6 @@
 import AbstractView from './abstract.js';
 import { DATE_FORMAT } from '../const.js';
-import { dateConverter, durationConverter } from '../utils/films.js';
+import { dateConverter, durationConverter } from '../utils/date.js';
 
 const getActiveClassName = (condition) => condition ? 'film-card__controls-item--active' : '';
 
@@ -45,8 +45,7 @@ export default class FilmCard extends AbstractView {
     return createFilmCardTemplate(this._film);
   }
 
-  _clickHandler(evt) {
-    evt.preventDefault();
+  _clickHandler() {
     this._callback.filmClick();
   }
 

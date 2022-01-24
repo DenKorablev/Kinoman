@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { EMOTIONS } from '../const.js';
 import { getRandomInt, getRandomFloat, getRandomArrayElement, makeRandomArrayGenerator } from '../utils/common.js';
-import { randomeDate } from '../utils/films.js';
+import { randomeDate } from '../utils/date.js';
 
 const YEAR_IN_MINUTES = 525600;
 
