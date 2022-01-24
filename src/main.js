@@ -81,19 +81,18 @@ const renderFilmsList = (films) => {
 
     if (films.length > FILMS_SHOW_STEP) {
       let step = FILMS_SHOW_STEP;
-      render(filmsListElement, new ShowMoreButtonView().getElement());
-      const showMoreBtn = filmsListElement.querySelector('.films-list__show-more');
+      const showMoreComponent = new ShowMoreButtonView();
 
-      showMoreBtn.addEventListener('click', (evt) => {
-        evt.preventDefault();
+      render(filmsListElement, showMoreComponent.getElement());
 
+      showMoreComponent.setLoadClickHandler(() => {
         films.slice(step, step + FILMS_SHOW_STEP).forEach((film) => {
           renderFilms(allFilmsListElement, film);
         });
         step += FILMS_SHOW_STEP;
 
         if (films.length <= step) {
-          showMoreBtn.remove();
+          showMoreComponent.getElement().remove();
         }
       });
     }
