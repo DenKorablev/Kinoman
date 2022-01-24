@@ -1,6 +1,6 @@
 import AbstractView from './abstract.js';
 import { DATE_FORMAT } from '../const.js';
-import { dateConverter, durationConverter } from '../util.js';
+import { dateConverter, durationConverter } from '../utils/films.js';
 
 const getActiveClassName = (condition) => condition ? 'film-card__controls-item--active' : '';
 

@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
 import { DATE_FORMAT, EMOTIONS } from '../const.js';
 import { COMMENTS } from '../mock/data.js';
-import { dateConverter, durationConverter } from '../util.js';
+import { dateConverter, durationConverter } from '../utils/films.js';
 
 const getActiveClassName = (condition) => condition ? 'film-details__control-button--active' : '';
 

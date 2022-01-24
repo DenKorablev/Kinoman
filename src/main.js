@@ -8,7 +8,8 @@ import PopupView from './view/popup.js';
 import StatisticsView from './view/statistics.js';
 import EmptyListButtonView from './view/empty-list.js';
 import { generateFilms } from './mock/data.js';
-import { render, isEscEvent } from './util.js';
+import { isEscEvent } from './utils/common.js';
+import { render } from './utils/render.js';
 
 const FILMS_SHOW_STEP = 5;
 const FILMS_COUNT = 18;
@@ -93,6 +94,7 @@ const renderFilmsList = (films) => {
 
         if (films.length <= step) {
           showMoreComponent.getElement().remove();
+          showMoreComponent.removeElement();
         }
       });
     }
