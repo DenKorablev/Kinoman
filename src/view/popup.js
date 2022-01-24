@@ -1,6 +1,7 @@
+import AbstractView from './abstract.js';
 import { DATE_FORMAT, EMOTIONS } from '../const.js';
 import { COMMENTS } from '../mock/data.js';
-import { dateConverter, durationConverter, createElement } from '../util.js';
+import { dateConverter, durationConverter } from '../util.js';
 
 const getActiveClassName = (condition) => condition ? 'film-details__control-button--active' : '';
 
@@ -138,25 +139,25 @@ export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
   `;
 };
 
-export default class Popup {
+export default class Popup extends AbstractView {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
+
+    this._popupClickHandler = this._popupClickHandler.bind(this);
   }
 
   getTemplate() {
     return createPopupTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _popupClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setPopupClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._popupClickHandler);
   }
 }

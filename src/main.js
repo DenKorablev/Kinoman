@@ -33,11 +33,6 @@ const renderFilms = (list, film) => {
   const filmComponent = new FilmCardView(film);
   const popupComponent = new PopupView(film);
 
-  const title = filmComponent.getElement().querySelector('.film-card__title');
-  const poster = filmComponent.getElement().querySelector('.film-card__poster');
-  const comments = filmComponent.getElement().querySelector('.film-card__comments');
-  const closeBtn = popupComponent.getElement().querySelector('.film-details__close-btn');
-
   const closePopup = () => {
     siteBodyElement.classList.remove('hide-overflow');
     siteBodyElement.removeChild(popupComponent.getElement());
@@ -57,19 +52,13 @@ const renderFilms = (list, film) => {
     document.addEventListener('keydown', onEscKeydown);
   };
 
-  title.addEventListener('click', openPopup);
-  poster.addEventListener('click', openPopup);
-  comments.addEventListener('click', openPopup);
-  closeBtn.addEventListener('click', () => {
-    closePopup();
-    document.addEventListener('keydown', onEscKeydown);
-  });
+  filmComponent.setClickHandler(openPopup);
+  popupComponent.setPopupClickHandler(closePopup);
 
   render(list, filmComponent.getElement());
 };
 
 const renderFilmsList = (films) => {
-
   const filmsListElement = mainElement.querySelector('.films-list');
   if (filmsData.length === 0) {
     render(filmsListElement, new EmptyListButtonView().getElement());

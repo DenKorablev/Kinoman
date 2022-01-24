@@ -1,5 +1,6 @@
+import AbstractView from './abstract.js';
 import { DATE_FORMAT } from '../const.js';
-import { dateConverter, durationConverter, createElement } from '../util.js';
+import { dateConverter, durationConverter } from '../util.js';
 
 const getActiveClassName = (condition) => condition ? 'film-card__controls-item--active' : '';
 
@@ -32,25 +33,27 @@ export const createFilmCardTemplate = ({comments, filmInfo, userDetails}) => {
   `;
 };
 
-export default class FilmCard {
+export default class FilmCard extends AbstractView {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
+
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.film-card__title').addEventListener('click', this._clickHandler);
+    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._clickHandler);
+    this.getElement().querySelector('.film-card__comments').addEventListener('click', this._clickHandler);
   }
 }

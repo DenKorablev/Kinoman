@@ -1,5 +1,5 @@
+import AbstractView from './abstract.js';
 import { generateFilters } from '../mock/filters.js';
-import { createElement } from '../util.js';
 
 const getActiveClassName = (condition) => condition ? 'main-navigation__item--active' : '';
 const crateFilterContainer = (films) => `
@@ -17,25 +17,13 @@ const createMenuTemplate = (films) => `
   </nav>
 `;
 
-export default class Menu {
+export default class Menu extends AbstractView {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createMenuTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
