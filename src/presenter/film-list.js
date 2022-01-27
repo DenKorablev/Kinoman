@@ -16,11 +16,13 @@ const EXTRA_COUNT = 2;
 export default class FilmList {
   constructor(filmsListContainer) {
     this._renderedFilmsStep = FILMS_SHOW_STEP;
+
+    this._filmsListContainer = filmsListContainer;
+
     this._filmComponents = {};
     this._filmTopRatedComponents = {};
     this._filmMostCommentedComponents = {};
 
-    this._filmsListContainer = filmsListContainer;
     this._filmPopupId = null;
     this._popupComponent = null;
     this._filmsTopRatedComponent = null;
@@ -182,10 +184,9 @@ export default class FilmList {
         film,
         {
           userDetails: {
-            watchlist: film.userDetails.watchlist,
+            ...film.userDetails,
             alreadyWatched: !film.userDetails.alreadyWatched,
-            watchingDate: !film.userDetails.alreadyWatched ? new Date() : null,
-            favorite: film.userDetails.favorite,
+            watchingDate: !film.userDetails.alreadyWatched ? new Date() : null
           }
         },
       ),
@@ -199,10 +200,8 @@ export default class FilmList {
         film,
         {
           userDetails: {
-            watchlist: !film.userDetails.watchlist,
-            favorite: film.userDetails.favorite,
-            watchingDate: film.userDetails.watchingDate,
-            alreadyWatched: film.userDetails.alreadyWatched
+            ...film.userDetails,
+            watchlist: !film.userDetails.watchlist
           }
         },
       ),
@@ -216,9 +215,7 @@ export default class FilmList {
         film,
         {
           userDetails: {
-            watchlist: film.userDetails.watchlist,
-            alreadyWatched: film.userDetails.alreadyWatched,
-            watchingDate: film.userDetails.watchingDate,
+            ...film.userDetails,
             favorite: !film.userDetails.favorite
           }
         },

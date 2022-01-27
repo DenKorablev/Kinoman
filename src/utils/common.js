@@ -30,7 +30,7 @@ const makeRandomArrayGenerator = (array) => {
 };
 
 const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+  const index = items.findIndex((item) => item.filmInfo.id === update.filmInfo.id);
 
   if (index === -1) {
     return items;
