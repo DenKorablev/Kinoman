@@ -46,7 +46,7 @@ export default class FilmCard extends AbstractView {
   }
 
   _clickHandler() {
-    this._callback.filmClick();
+    this._callback.filmClick(this._film);
   }
 
   setClickHandler(callback) {

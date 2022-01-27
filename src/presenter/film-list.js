@@ -15,8 +15,12 @@ const EXTRA_COUNT = 2;
 
 export default class FilmList {
   constructor(filmsListContainer) {
-    this._filmsListContainer = filmsListContainer;
     this._renderedFilmsStep = FILMS_SHOW_STEP;
+
+    this._filmsListContainer = filmsListContainer;
+    this._filmComponent = null;
+    this._popupComponent = null;
+
     this._filmsComponent = new FilmsView();
     this._filmsListComponent = new FilmsListView();
     this._filmsListContainerComponent = new FilmsListContainerView();
@@ -24,6 +28,9 @@ export default class FilmList {
     this._emptyListComponent = new EmptyListButtonView();
     this._showMoreComponent = new ShowMoreButtonView();
 
+    this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
+    this._handlePopupClick = this._handlePopupClick.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
   }
 
@@ -38,32 +45,11 @@ export default class FilmList {
   }
 
   _renderFilm(list, film) {
-    const filmComponent = new FilmCardView(film);
-    const popupComponent = new PopupView(film);
+    this._filmComponent = new FilmCardView(film);
 
-    const onEscKeydown = (evt) => {
-      if (isEscEvent(evt)) {
-        evt.preventDefault();
-        closePopup();
-      }
-    };
+    this._filmComponent.setClickHandler(this._handleFilmCardClick);
 
-    const closePopup = () => {
-      document.body.classList.remove('hide-overflow');
-      document.removeEventListener('keydown', onEscKeydown);
-      document.body.removeChild(popupComponent.getElement());
-    };
-
-    const openPopup = () => {
-      document.body.classList.add('hide-overflow');
-      document.addEventListener('keydown', onEscKeydown);
-      render(document.body, popupComponent);
-    };
-
-    filmComponent.setClickHandler(openPopup);
-    popupComponent.setPopupClickHandler(closePopup);
-
-    render(list, filmComponent);
+    render(list, this._filmComponent);
   }
 
   _renderFilmsMain(from, to) {
@@ -105,6 +91,29 @@ export default class FilmList {
 
     const extra = new FilmsListExtraView('Top rated');
     this._renderFilmsExtra(extra, films);
+  }
+
+  _escKeyDownHandler(evt) {
+    if (isEscEvent(evt)) {
+      evt.preventDefault();
+      this._handlePopupClick();
+    }
+  }
+
+  _handlePopupClick() {
+    document.body.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+    document.body.removeChild(this._popupComponent.getElement());
+  }
+
+  _handleFilmCardClick(film) {
+    this._popupComponent = new PopupView(film);
+
+    document.body.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._escKeyDownHandler);
+
+    this._popupComponent.setPopupClickHandler(this._handlePopupClick);
+    render(document.body, this._popupComponent);
   }
 
   _handleLoadMoreButtonClick() {
