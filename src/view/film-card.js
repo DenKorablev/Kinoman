@@ -39,20 +39,53 @@ export default class FilmCard extends AbstractView {
     this._film = film;
 
     this._clickHandler = this._clickHandler.bind(this);
+    this._addWatchlistHandler = this._addWatchlistHandler.bind(this);
+    this._watchedHandler = this._watchedHandler.bind(this);
+    this._favoriteHandler = this._favoriteHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
   }
 
-  _clickHandler() {
+  _clickHandler(evt) {
+    if (evt.target.className !== 'film-card__title'
+      && evt.target.className !== 'film-card__poster'
+      && evt.target.className !== 'film-card__comments') {
+      return;
+    }
     this._callback.filmClick(this._film);
+  }
+
+  _addWatchlistHandler() {
+    this._callback.watchlistClick(this._film);
+  }
+
+  _watchedHandler() {
+    this._callback.watchedClick(this._film);
+  }
+
+  _favoriteHandler() {
+    this._callback.favoriteClick(this._film);
   }
 
   setClickHandler(callback) {
     this._callback.filmClick = callback;
-    this.getElement().querySelector('.film-card__title').addEventListener('click', this._clickHandler);
-    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._clickHandler);
-    this.getElement().querySelector('.film-card__comments').addEventListener('click', this._clickHandler);
+    this.getElement().addEventListener('click', this._clickHandler);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback.watchlistClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--add-to-watchlist ').addEventListener('click', this._addWatchlistHandler);
+  }
+
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this._watchedHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._favoriteHandler);
   }
 }

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 import { EMOTIONS } from '../const.js';
 import { getRandomInt, getRandomFloat, getRandomArrayElement, makeRandomArrayGenerator } from '../utils/common.js';
 import { randomeDate } from '../utils/date.js';
@@ -122,6 +123,7 @@ const getFilmInfo = () => {
   const description = makeRandomArrayGenerator(DESCRIPTIONS).join(' ');
 
   return {
+    id: nanoid(),
     title,
     alternativeTitle,
     totalRating: getRandomFloat(1, 10, 1),
