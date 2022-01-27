@@ -7,7 +7,7 @@ import EmptyListButtonView from '../view/empty-list.js';
 import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
 import ShowMoreButtonView from '../view/show-more-btn.js';
-import { render, remove } from '../utils/render.js';
+import { render, remove, replace } from '../utils/render.js';
 import { isEscEvent, updateItem } from '../utils/common.js';
 
 const FILMS_SHOW_STEP = 5;
@@ -17,9 +17,13 @@ export default class FilmList {
   constructor(filmsListContainer) {
     this._renderedFilmsStep = FILMS_SHOW_STEP;
     this._filmComponents = {};
+    this._filmTopRatedComponents = {};
+    this._filmMostCommentedComponents = {};
 
     this._filmsListContainer = filmsListContainer;
     this._popupComponent = null;
+    this._filmsTopRatedComponent = null;
+    this._filmsMostCommentedComponent = null;
 
     this._filmsComponent = new FilmsView();
     this._filmsListComponent = new FilmsListView();
@@ -48,7 +52,7 @@ export default class FilmList {
     render(this._filmsListComponent, this._sortComponent, 'afterbegin');
   }
 
-  _renderFilm(list, film) {
+  _createFilm(film) {
     const filmComponent = new FilmCardView(film);
 
     filmComponent.setClickHandler(this._handleFilmCardClick);
@@ -56,12 +60,28 @@ export default class FilmList {
     filmComponent.setWatchedClickHandler(this._handleWatchedClick);
     filmComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    this._filmComponents[film.filmInfo.id] = filmComponent;
+    return filmComponent;
+  }
+
+  _renderFilm(list, film, componets) {
+    const filmComponent = this._createFilm(film);
+
+    componets[film.filmInfo.id] = filmComponent;
     render(list, filmComponent);
   }
 
+  _replaceFilmComponent(filmComponents, film) {
+    const oldFilmComponent = filmComponents[film.filmInfo.id];
+    const newFilmComponent = this._createFilm(film);
+
+    replace(newFilmComponent, oldFilmComponent);
+    remove(oldFilmComponent);
+
+    filmComponents[film.filmInfo.id] = newFilmComponent;
+  }
+
   _renderFilmsMain(from, to) {
-    this._films.slice(from, to).forEach((film) => this._renderFilm(this._filmsListContainerComponent, film));
+    this._films.slice(from, to).forEach((film) => this._renderFilm(this._filmsListContainerComponent, film, this._filmComponents));
 
     if (this._films.length > this._renderedFilmsStep) {
       this._renderShowMoreButton(this._filmsListContainerComponent);
@@ -70,7 +90,7 @@ export default class FilmList {
     this._renderSort();
   }
 
-  _renderFilmsExtra(filmsListExtraComponent, filmsList) {
+  _renderFilmsExtra(filmsListExtraComponent, filmsList, componets) {
     if (filmsList.length > 0) {
       const filmsListContainerComponent = new FilmsListContainerView();
 
@@ -78,7 +98,7 @@ export default class FilmList {
       render(filmsListExtraComponent, filmsListContainerComponent);
 
       filmsList.forEach((film) => {
-        this._renderFilm(filmsListContainerComponent, film);
+        this._renderFilm(filmsListContainerComponent, film, componets);
       });
     }
   }
@@ -88,8 +108,8 @@ export default class FilmList {
       .sort((a, b) => b.comments.length - a.comments.length)
       .slice(0, EXTRA_COUNT);
 
-    const extra = new FilmsListExtraView('Most commented');
-    this._renderFilmsExtra(extra, films);
+    this._filmsMostCommentedComponent = new FilmsListExtraView('Most commented');
+    this._renderFilmsExtra(this._filmsMostCommentedComponent, films, this._filmMostCommentedComponents);
   }
 
   _renderFilmsTopRated() {
@@ -97,8 +117,17 @@ export default class FilmList {
       .sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating)
       .slice(0, EXTRA_COUNT);
 
-    const extra = new FilmsListExtraView('Top rated');
-    this._renderFilmsExtra(extra, films);
+    this._filmsTopRatedComponent = new FilmsListExtraView('Top rated');
+    this._renderFilmsExtra(this._filmsTopRatedComponent, films, this._filmTopRatedComponents);
+  }
+
+  _clearTaskList() {
+    Object
+      .values(this._filmComponents)
+      .forEach((component) => remove(component));
+    this._taskPresenter = {};
+    this._renderedFilmsStep = FILMS_SHOW_STEP;
+    remove(this._showMoreComponent);
   }
 
   _escKeyDownHandler(evt) {
@@ -116,7 +145,23 @@ export default class FilmList {
 
   _handleFilmChange(updatedPoint) {
     this._films = updateItem(this._films, updatedPoint);
-/*     replace(this._filmsListContainerComponent, new FilmCardView(updatedPoint)); */
+    this._replaceFilmComponent(this._filmComponents, updatedPoint);
+    this._clearFilmsTopRated();
+    this._clearFilmsMostCommented();
+    this._renderFilmsTopRated();
+    this._renderFilmsMostCommented();
+  }
+
+  _clearFilmsTopRated() {
+    Object.values(this._filmTopRatedComponents).forEach((component) => remove(component));
+    this._filmTopRatedComponents = {};
+    remove(this._filmsTopRatedComponent);
+  }
+
+  _clearFilmsMostCommented() {
+    Object.values(this._filmMostCommentedComponents).forEach((component) => remove(component));
+    this._filmMostCommentedComponents = {};
+    remove(this._filmsMostCommentedComponent);
   }
 
   _handleWatchedClick(film) {
@@ -137,6 +182,7 @@ export default class FilmList {
   }
 
   _handleWatchlistClick(film) {
+    debugger
     this._handleFilmChange(
       Object.assign(
         {},
@@ -178,6 +224,10 @@ export default class FilmList {
     document.addEventListener('keydown', this._escKeyDownHandler);
 
     this._popupComponent.setPopupClickHandler(this._handlePopupClick);
+    this._popupComponent.setWatchlistPopupClickHandler(this._handleWatchlistClick);
+    this._popupComponent.setWatchedPopupClickHandler(this._handleWatchedClick);
+    this._popupComponent.setFavoritePopupClickHandler(this._handleFavoriteClick);
+
     render(document.body, this._popupComponent);
   }
 
