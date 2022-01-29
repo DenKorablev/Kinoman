@@ -5,6 +5,12 @@ const DATE_FORMAT = {
   DATE: 'DD MMMM YYYY'
 };
 
+const SORT_TYPE = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+
 const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
-export { DATE_FORMAT, EMOTIONS };
+export { DATE_FORMAT, EMOTIONS, SORT_TYPE };

@@ -9,6 +9,8 @@ import PopupView from '../view/popup.js';
 import ShowMoreButtonView from '../view/show-more-btn.js';
 import { render, remove, replace } from '../utils/render.js';
 import { isEscEvent, updateItem } from '../utils/common.js';
+import { SORT_TYPE } from '../const.js';
+import { sortByDate, sortByRating } from '../utils/sorting.js';
 
 const FILMS_SHOW_STEP = 5;
 const EXTRA_COUNT = 2;
@@ -16,6 +18,7 @@ const EXTRA_COUNT = 2;
 export default class FilmList {
   constructor(filmsListContainer) {
     this._renderedFilmsStep = FILMS_SHOW_STEP;
+    this._currentSortType = SORT_TYPE.DEFAULT;
 
     this._filmsListContainer = filmsListContainer;
 
@@ -31,7 +34,6 @@ export default class FilmList {
     this._filmsComponent = new FilmsView();
     this._filmsListComponent = new FilmsListView();
     this._filmsListContainerComponent = new FilmsListContainerView();
-    this._sortComponent = new SortingView();
     this._emptyListComponent = new EmptyListButtonView();
     this._showMoreComponent = new ShowMoreButtonView();
 
@@ -43,16 +45,24 @@ export default class FilmList {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
+    this._handleSortTypeClick = this._handleSortTypeClick.bind(this);
   }
 
   init(films) {
     this._films = films.slice();
+    this._sourcedFilms = films.slice();
     render(this._filmsListContainer, this._filmsComponent);
     this._renderFilmsList();
   }
 
   _renderSort() {
+    if (this._sortComponent !== null) {
+      this._sortComponent = null;
+    }
+
+    this._sortComponent = new SortingView(this._currentSortType);
     render(this._filmsListComponent, this._sortComponent, 'afterbegin');
+    this._sortComponent.setSortTypeChangeHandle(this._handleSortTypeClick);
   }
 
   _createFilm(film) {
@@ -89,8 +99,6 @@ export default class FilmList {
     if (this._films.length > this._renderedFilmsStep) {
       this._renderShowMoreButton(this._filmsListContainerComponent);
     }
-
-    this._renderSort();
   }
 
   _renderFilmsExtra(filmsListExtraComponent, filmsList, componets) {
@@ -124,13 +132,13 @@ export default class FilmList {
     this._renderFilmsExtra(this._filmsTopRatedComponent, films, this._filmTopRatedComponents);
   }
 
-  _clearTaskList() {
+  _clearFilmsList() {
     Object
       .values(this._filmComponents)
       .forEach((component) => remove(component));
-    this._taskPresenter = {};
     this._renderedFilmsStep = FILMS_SHOW_STEP;
     remove(this._showMoreComponent);
+    remove(this._sortComponent);
   }
 
   _escKeyDownHandler(evt) {
@@ -148,6 +156,7 @@ export default class FilmList {
 
   _handleFilmChange(updatedPoint) {
     this._films = updateItem(this._films, updatedPoint);
+    this._sourcedFilms = updateItem(this._sourcedFilms, updatedPoint);
 
     if (this._filmComponents[updatedPoint.filmInfo.id]) {
       this._replaceFilmComponent(this._filmComponents, updatedPoint);
@@ -243,6 +252,33 @@ export default class FilmList {
     remove(oldFilmComponent);
   }
 
+  _sortingFilms(sortType) {
+    switch (sortType) {
+      case SORT_TYPE.DATE:
+        this._films.sort(sortByDate);
+        break;
+      case SORT_TYPE.RATING:
+        this._films.sort(sortByRating);
+        break;
+      default:
+        this._films = this._sourcedFilms.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeClick(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortingFilms(sortType);
+    this._clearFilmsList();
+    this._clearFilmsTopRated();
+    this._clearFilmsMostCommented();
+    this._renderFilmsList();
+  }
+
   _handleFilmCardClick(film) {
     if (this._popupComponent) {
       remove(this._popupComponent);
@@ -282,6 +318,7 @@ export default class FilmList {
     render(this._filmsComponent, this._filmsListComponent);
     render(this._filmsListComponent, this._filmsListContainerComponent);
 
+    this._renderSort();
     this._renderFilmsMain(0, Math.min(this._films.length, FILMS_SHOW_STEP));
     this._renderFilmsTopRated();
     this._renderFilmsMostCommented();
