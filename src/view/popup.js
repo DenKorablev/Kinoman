@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import { DATE_FORMAT, EMOTIONS } from '../const.js';
 import { COMMENTS } from '../mock/data.js';
 import { dateConverter, durationConverter } from '../utils/date.js';
@@ -46,7 +46,22 @@ const createEmotionListContainer = () => `
   ).join(' ')}
   </div>`;
 
-export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
+const createNewCommentTemplate = (emojiIcon) => {
+  const em = emojiIcon !== '' ?
+    `<img src="./images/emoji/${emojiIcon}.png" width="55" height="55" alt="emoji-smile">` : '';
+
+  return `
+    <div class="film-details__new-comment">
+      <div class="film-details__add-emoji-label">${em}</div>
+      <label class="film-details__comment-label">
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+      </label>
+      ${createEmotionListContainer()}
+    </div>
+  `;
+};
+
+export const createPopupTemplate = ({comments, filmInfo, userDetails, emojiIcon}) => {
   const { title, alternativeTitle, totalRating, ageRating, director, writers, actors, runtime, release, genre, poster, description } = filmInfo;
   const { favorite, alreadyWatched, watchlist } = userDetails;
   const releaseYear = dateConverter(release.date, DATE_FORMAT.DATE);
@@ -124,14 +139,7 @@ export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
             ${createCommentsContainer(comments)}
-            <div class="film-details__new-comment">
-              <div class="film-details__add-emoji-label"></div>
-
-              <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-              </label>
-              ${createEmotionListContainer(comments)}
-            </div>
+            ${createNewCommentTemplate(emojiIcon)}
           </section>
         </div>
       </form>
@@ -139,19 +147,30 @@ export const createPopupTemplate = ({comments, filmInfo, userDetails}) => {
   `;
 };
 
-export default class Popup extends AbstractView {
+export default class Popup extends SmartView {
   constructor(film) {
     super();
-    this._film = film;
+    this._film = Popup.parseFilmToData(film);
 
     this._popupClickHandler = this._popupClickHandler.bind(this);
     this._watchlistPopupClickHandler = this._watchlistPopupClickHandler.bind(this);
     this._watchedPopupClickHandler = this._watchedPopupClickHandler.bind(this);
     this._favoritePopupClickHandler = this._favoritePopupClickHandler.bind(this);
+    this._emojiIChangeHandler = this._emojiIChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
     return createPopupTemplate(this._film);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setPopupClickHandler(this._callback.closeClick);
+    this.setWatchlistPopupClickHandler(this._callback.watchlistClick);
+    this.setWatchedPopupClickHandler(this._callback.watchedClick);
+    this.setFavoritePopupClickHandler(this._callback.favoriteClick);
   }
 
   _popupClickHandler() {
@@ -168,6 +187,19 @@ export default class Popup extends AbstractView {
 
   _favoritePopupClickHandler() {
     this._callback.favoriteClick(this._film);
+  }
+
+  _emojiIChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      emojiIcon: evt.target.value,
+    }, false);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.film-details__emoji-list')
+      .addEventListener('change', this._emojiIChangeHandler);
   }
 
   setPopupClickHandler(callback) {
@@ -188,5 +220,19 @@ export default class Popup extends AbstractView {
   setFavoritePopupClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._favoritePopupClickHandler);
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign(
+      {},
+      film,
+      {
+        emojiIcon: ''
+      }
+    );
+  }
+
+  static parseDataToFilm(data) {
+    return Object.assign({}, data);
   }
 }
