@@ -14,5 +14,13 @@ module.exports = {
     },
     compress: true,
     port: 8000,
+  },
+  module: {
+    rules: [
+        {
+            test: /\.css$/i,
+            use: ['style-loader', 'css-loader']
+        }
+    ]
   }
 }

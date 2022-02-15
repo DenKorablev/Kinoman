@@ -29,20 +29,6 @@ const makeRandomArrayGenerator = (array) => {
   return result.sort();
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.filmInfo.id === update.filmInfo.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const isEscEvent = (evt) => evt.key === ('Escape' || 'Esc');
 
 export {
@@ -50,6 +36,5 @@ export {
   getRandomFloat,
   getRandomArrayElement,
   makeRandomArrayGenerator,
-  isEscEvent,
-  updateItem
+  isEscEvent
 };

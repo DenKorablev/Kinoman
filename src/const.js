@@ -13,4 +13,23 @@ const SORT_TYPE = {
 
 const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
-export { DATE_FORMAT, EMOTIONS, SORT_TYPE };
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const FilterType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITE: 'favorite',
+};
+
+export { DATE_FORMAT, EMOTIONS, SORT_TYPE, UserAction, UpdateType, FilterType };
