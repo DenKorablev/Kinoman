@@ -6,6 +6,8 @@ import { generateFilms } from './mock/data.js';
 import { render } from './utils/render.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
+import CommentsModel from './model/comments.js';
+import { COMMENTS } from './mock/data.js';
 
 const FILMS_COUNT = 18;
 
@@ -13,6 +15,9 @@ const filmsData = new Array(FILMS_COUNT).fill().map(generateFilms);
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(filmsData);
+
+const commentsModel = new CommentsModel();
+commentsModel.setComments(COMMENTS);
 
 const filterModel = new FilterModel();
 
@@ -24,7 +29,7 @@ const footerStaisticsElement = siteBodyElement.querySelector('.footer__statistic
 render(headerElement, new ProfileView(filmsData));
 render(footerStaisticsElement, new StatisticsView(filmsData));
 
-const listPresenter = new FilmListPresenter(mainElement, filmsModel, filterModel);
+const listPresenter = new FilmListPresenter(mainElement, filmsModel, filterModel, commentsModel);
 const filterPresenter = new FilterPresenter(mainElement, filmsModel, filterModel);
 listPresenter.init();
 filterPresenter.init();

@@ -10,6 +10,14 @@ export default class Films extends Observer {
     this._films = films.slice();
   }
 
+  getFilm(id) {
+    return this._films.find((el) => el.filmInfo.id === id);
+  }
+
+  getFilmsCount() {
+    return this._films.length;
+  }
+
   getFilms() {
     return this._films;
   }
