@@ -14,8 +14,8 @@ export default class Films extends Observer {
     return this._films;
   }
 
-  updatePoint(updateType, update) {
-    const index = this._films.findIndex((film) => film.id === update.id);
+  updateFilm(updateType, update) {
+    const index = this._films.findIndex((film) => film.filmInfo.id === update.filmInfo.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting point');
@@ -28,29 +28,5 @@ export default class Films extends Observer {
     ];
 
     this._notify(updateType, update);
-  }
-
-  addFilm(updateType, update) {
-    this._films = [
-      update,
-      ...this._films,
-    ];
-
-    this._notify(updateType, update);
-  }
-
-  deleteFilm(updateType, update) {
-    const index = this._films.findIndex((film) => film.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting point');
-    }
-
-    this._films = [
-      ...this._films.slice(0, index),
-      ...this._films.slice(index + 1),
-    ];
-
-    this._notify(updateType);
   }
 }

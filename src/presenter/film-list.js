@@ -9,7 +9,7 @@ import PopupView from '../view/popup.js';
 import ShowMoreButtonView from '../view/show-more-btn.js';
 import { render, remove, replace } from '../utils/render.js';
 import { isEscEvent } from '../utils/common.js';
-import { SORT_TYPE } from '../const.js';
+import { SORT_TYPE, UpdateType, UserAction } from '../const.js';
 import { sortByDate, sortByRating } from '../utils/sorting.js';
 
 const FILMS_SHOW_STEP = 5;
@@ -29,6 +29,7 @@ export default class FilmList {
 
     this._filmPopupId = null;
     this._popupComponent = null;
+    this._filmsMainComponent = null;
     this._filmsTopRatedComponent = null;
     this._filmsMostCommentedComponent = null;
 
@@ -47,6 +48,11 @@ export default class FilmList {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
     this._handleSortTypeClick = this._handleSortTypeClick.bind(this);
+
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+
+    this._filmsModel.addObserver(this._handleModelEvent);
   }
 
   _getFilms() {
@@ -105,13 +111,14 @@ export default class FilmList {
 
   _renderFilmsMain() {
     const filmCount = this._getFilms().length;
-    const films = this._getFilms().slice(0, Math.min(filmCount, FILMS_SHOW_STEP));
+    const films = this._getFilms().slice(0, Math.min(filmCount, this._renderedFilmsStep));
 
     films.forEach((film) => this._renderFilm(this._filmsListContainerComponent, film, this._filmComponents));
 
     if (filmCount > this._renderedFilmsStep) {
-      this._renderShowMoreButton(this._filmsListContainerComponent);
+      this._renderShowMoreButton(this._filmsListComponent);
     }
+    this._renderSort();
   }
 
   _renderFilmsExtra(filmsListExtraComponent, filmsList, componets) {
@@ -128,7 +135,8 @@ export default class FilmList {
   }
 
   _renderFilmsMostCommented() {
-    const films = this._getFilms().slice()
+    const films = this._filmsModel.getFilms()
+      .filter((film) => film.comments.length > 0)
       .sort((a, b) => b.comments.length - a.comments.length)
       .slice(0, EXTRA_COUNT);
 
@@ -137,7 +145,8 @@ export default class FilmList {
   }
 
   _renderFilmsTopRated() {
-    const films = this._getFilms().slice()
+    const films = this._filmsModel.getFilms()
+      .filter((film) => film.filmInfo.totalRating> 0)
       .sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating)
       .slice(0, EXTRA_COUNT);
 
@@ -145,13 +154,22 @@ export default class FilmList {
     this._renderFilmsExtra(this._filmsTopRatedComponent, films, this._filmTopRatedComponents);
   }
 
-  _clearFilmsList() {
+  _clearFilmsList(resetRenderedFilmCount = false) {
     Object
       .values(this._filmComponents)
       .forEach((component) => remove(component));
-    this._renderedFilmsStep = FILMS_SHOW_STEP;
-    remove(this._showMoreComponent);
+
+    const filmsCount = this._getFilms().length;
+
     remove(this._sortComponent);
+    remove(this._showMoreComponent);
+
+    if (resetRenderedFilmCount) {
+      this._renderedFilmsStep = FILMS_SHOW_STEP;
+    } else {
+      debugger
+      this._renderedFilmsStep = Math.min(filmsCount, this._renderedFilmsStep);
+    }
   }
 
   _escKeyDownHandler(evt) {
@@ -165,6 +183,38 @@ export default class FilmList {
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this._escKeyDownHandler);
     document.body.removeChild(this._popupComponent.getElement());
+  }
+
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_FILM:
+        this._filmsModel.updateFilm(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this._handleFilmChange(data);
+        break;
+      case UpdateType.MINOR:
+        this._clearFilmsList();
+        this._clearFilmsTopRated();
+        this._clearFilmsMostCommented();
+        this._renderFilmsMain();
+        this._renderFilmsTopRated();
+        this._renderFilmsMostCommented();
+
+        if (this._popupComponent && this._filmPopupId === data.filmInfo.id) {
+/*           this._popupComponent.update(data, this._commentsModel.getComments()); */
+        }
+        break;
+      case UpdateType.MAJOR:
+        this._clearFilmsList({resetRenderedFilmCount: true, resetSortType: true});
+        this._renderFilmsList();
+        break;
+    }
   }
 
   _handleFilmChange(updatedPoint) {
@@ -197,7 +247,9 @@ export default class FilmList {
   }
 
   _handleWatchedClick(film) {
-    this._handleFilmChange(
+    this._handleViewAction(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         film,
@@ -213,7 +265,9 @@ export default class FilmList {
   }
 
   _handleWatchlistClick(film) {
-    this._handleFilmChange(
+    this._handleViewAction(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         film,
@@ -228,7 +282,9 @@ export default class FilmList {
   }
 
   _handleFavoriteClick(film) {
-    this._handleFilmChange(
+    this._handleViewAction(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         film,
@@ -268,10 +324,8 @@ export default class FilmList {
     }
 
     this._currentSortType = sortType;
-    this._clearFilmsList();
-    this._clearFilmsTopRated();
-    this._clearFilmsMostCommented();
-    this._renderFilmsList();
+    this._clearFilmsList(true);
+    this._renderFilmsMain();
   }
 
   _handleFilmCardClick(film) {
@@ -291,7 +345,8 @@ export default class FilmList {
     const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmsStep + FILMS_SHOW_STEP);
     const films = this._getFilms().slice(this._renderedFilmsStep, newRenderedFilmCount);
 
-    this._renderFilmsMain(films);
+    films.forEach((film) => this._renderFilm(this._filmsListContainerComponent, film, this._filmComponents));
+
     this._renderedFilmsStep = newRenderedFilmCount;
 
     if (this._renderedFilmsStep >= filmCount) {
@@ -319,7 +374,6 @@ export default class FilmList {
     render(this._filmsComponent, this._filmsListComponent);
     render(this._filmsListComponent, this._filmsListContainerComponent);
 
-    this._renderSort();
     this._renderFilmsMain();
     this._renderFilmsTopRated();
     this._renderFilmsMostCommented();
