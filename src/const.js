@@ -30,6 +30,14 @@ const FilterType = {
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITE: 'favorite',
+  STATS: 'stats',
 };
 
-export { DATE_FORMAT, EMOTIONS, SORT_TYPE, UserAction, UpdateType, FilterType };
+export {
+  DATE_FORMAT,
+  EMOTIONS,
+  SORT_TYPE,
+  UserAction,
+  UpdateType,
+  FilterType
+};

@@ -1,41 +1,47 @@
 import AbstractView from './abstract.js';
+import { FilterType } from '../const.js';
 
-const getActiveClassName = (condition) => condition ? 'main-navigation__item--active' : '';
-const crateFilterContainer = (filters, currentFilter) => `
-  <div class="main-navigation__items">
-    ${filters.map(({type, name, count}) => `
-      <a href="#${name}" class="main-navigation__item ${getActiveClassName(type === currentFilter)}" data-filter="${type}">${name} ${count}</a>
-    `).join(' ')}
-  </div>
-`;
-
-const createMenuTemplate = (films, currentFilter) => `
+const createMenuTemplate = () => `
   <nav class="main-navigation">
-    ${crateFilterContainer(films, currentFilter)}
-    <a href="#stats" class="main-navigation__additional">Stats</a>
+    <a href="#stats" class="main-navigation__additional" data-filter="${FilterType.STATS}">Stats</a>
   </nav>
 `;
 
 export default class Menu extends AbstractView {
-  constructor(filters, currentFilter) {
+  constructor() {
     super();
-    this._filters = filters;
 
-    this._currentFilter = currentFilter;
-    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+    this._active = FilterType.ALL;
+    this._menuChangeHandler = this._menuChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createMenuTemplate(this._filters, this._currentFilter);
+    return createMenuTemplate();
   }
 
-  _filterTypeChangeHandler(evt) {
+  _menuChangeHandler(evt) {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.dataset.filter);
+    if (evt.target.dataset.filter === this._active) {
+      return;
+    }
+    this._active = evt.target.dataset.filter;
+    this._setMenuItem(evt.target);
+    this._callback.menuClickChange(evt.target.dataset.filter);
   }
 
-  setFilterTypeChangeHandler(callback) {
-    this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener('click', this._filterTypeChangeHandler);
+  setMenuClickHandler(callback) {
+    this._callback.menuClickChange = callback;
+    this.getElement().addEventListener('click', this._menuChangeHandler);
+  }
+
+  _setMenuItem(target) {
+    const item = this.getElement().querySelector('.main-navigation__additional');
+    const active = this.getElement().querySelector('.main-navigation__item--active');
+    if (target.dataset.filter === FilterType.STATS) {
+      active.classList.remove('main-navigation__item--active');
+      target.classList.add('main-navigation__item--active');
+    } else {
+      item.classList.remove('main-navigation__item--active');
+    }
   }
 }

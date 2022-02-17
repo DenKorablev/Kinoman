@@ -265,6 +265,15 @@ export default class FilmList {
     }
   }
 
+  destroy() {
+    this._clearFilmsList({resetRenderedFilmCount: true, resetSortType: true});
+
+    remove(this._filmsListComponent);
+
+    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
   _clearMainFilmsList(resetRenderedFilmCount = false) {
     Object
       .values(this._filmComponents)
