@@ -456,4 +456,14 @@ export default class FilmList {
     this._renderFilmsTopRated();
     this._renderFilmsMostCommented();
   }
+
+  show() {
+    this._sortComponent.getElement().classList.remove('visually-hidden');
+    this._filmsComponent.getElement().classList.remove('visually-hidden');
+  }
+
+  hide() {
+    this._sortComponent.getElement().classList.add('visually-hidden');
+    this._filmsComponent.getElement().classList.add('visually-hidden');
+  }
 }

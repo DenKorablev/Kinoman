@@ -1,7 +1,7 @@
 import SmartView from './smart.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { getUniqueGenres, StatsType } from '../utils/statistics.js';
+import { getDataStatistics, StatsType } from '../utils/statistics.js';
 
 const BAR_HEIGHT = 50;
 
@@ -28,15 +28,15 @@ const FILTERS = [
   }
 ];
 
-const renderStatisticsChart = (statisticCtx, genres) => {
-  console.log(statisticCtx);
+const renderStatisticsChart = (statisticCtx, { genres }) => {
+  console.log(genres);
   return new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: genres,
+      labels: genres.types,
       datasets: [{
-        data: [11, 8, 7, 4, 3],
+        data: genres.values,
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -159,10 +159,9 @@ export default class Statistics extends SmartView {
       this._statisticCtx = null;
     }
 
-    const genres = getUniqueGenres(this._films);
+    const data = getDataStatistics(this._films, this._currentFilter);
     const statisticCtx = this.getElement().querySelector('.statistic__chart');
-    this._statisticCtx = renderStatisticsChart(statisticCtx, genres);
-    statisticCtx.height = BAR_HEIGHT * 5;
+    this._statisticCtx = renderStatisticsChart(statisticCtx, data);
   }
 
   _filterStatsChangeHandler(evt) {

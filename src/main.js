@@ -45,14 +45,13 @@ const handleSiteMenuClick = (menuItem) => {
     case FilterType.HISTORY:
     case FilterType.FAVORITE:
       remove(statisticsComponent);
-      listPresenter.destroy();
-      listPresenter.init();
+      listPresenter.show();
       break;
     case FilterType.STATS:
       statisticsComponent = new StatisticsView(filmsModel.getFilms());
       statisticsComponent.setFilterStatsChangeHandler();
       render(mainElement, statisticsComponent);
-      listPresenter.destroy();
+      listPresenter.hide();
       break;
   }
 };

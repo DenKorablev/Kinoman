@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const StatsType = {
   ALL: 'all-time',
   TODAY: 'today',
@@ -8,8 +10,53 @@ export const StatsType = {
 
 export const makeItemsUniq = (items) => [...new Set(items)];
 
-export const getUniqueGenres = (films) => {
-  const allGenres = films.map((film) => film.filmInfo.genre);
-  const results = allGenres.reduce((result, element) => (result.concat(element)), []);
-  return makeItemsUniq(results);
+export const getDataStatistics = (films, filterMode) => {
+  const currentDate = new Date();
+  let filmsWatched = [];
+
+  switch (filterMode) {
+    case StatsType.ALL:
+      filmsWatched = films.filter((film) => film.userDetails.alreadyWatched);
+      break;
+    case StatsType.TODAY:
+      filmsWatched = films
+        .filter((film) => film.userDetails.alreadyWatched && dayjs(film.userDetails.watchingDate).isSame(currentDate, 'day'));
+      break;
+    case StatsType.WEEK:
+      filmsWatched = films
+        .filter((film) => film.userDetails.alreadyWatched && dayjs(film.userInfo.watchingDate).isSame(currentDate, 'week'));
+      break;
+    case StatsType.MONTH:
+      filmsWatched = films
+        .filter((film) => film.userDetails.alreadyWatched && dayjs(film.userDetails.watchingDate).isSame(currentDate, 'month'));
+      break;
+    case StatsType.YEAR:
+      filmsWatched = films
+        .filter((film) => film.userDetails.alreadyWatched && dayjs(film.userDetails.watchingDate).isSame(currentDate, 'year'));
+      break;
+  }
+
+  const allFilmsGenres = filmsWatched.reduce((allGenres, film) => {
+    allGenres.push(...film.filmInfo.genre);
+    return allGenres;
+  }, []);
+
+  let genres = new Map();
+
+  allFilmsGenres.forEach((genre) => {
+    if (genres.has(genre)) {
+      let genreCount = genres.get(genre);
+      genres.set(genre, ++genreCount);
+    } else {
+      genres.set(genre, 1);
+    }
+  });
+
+  genres = new Map([...genres.entries()].sort((a, b) => b[1] - a[1]));
+  genres = [...genres.entries()].reduce((result, [type, value]) => {
+    result.types.push(type.toUpperCase());
+    result.values.push(value);
+    return result;
+  }, { types: [], values: [] });
+  return { genres };
 };

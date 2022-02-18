@@ -140,7 +140,7 @@ const getFilmInfo = () => {
 };
 
 const getDetails = () => {
-  const watchingDate = dayjs().subtract(getRandomInt(1, 300), 'm').toDate();
+  const watchingDate = dayjs().subtract(getRandomInt(1, 1000), 'm').toDate();
   return {
     watchlist: Boolean(getRandomInt()),
     alreadyWatched: Boolean(getRandomInt()),
