@@ -31,10 +31,22 @@ const makeRandomArrayGenerator = (array) => {
 
 const isEscEvent = (evt) => evt.key === ('Escape' || 'Esc');
 
+const getProfileRaiting = (films) => {
+  const watched = films.filter((film) => film.userDetails.alreadyWatched);
+  if (watched.length > 0 && watched.length <= 10) {
+    return 'novice';
+  } else if (watched.length > 10 && watched.length <= 20) {
+    return 'fan';
+  } else if (watched.length > 20) {
+    return 'movie buff';
+  }
+};
+
 export {
   getRandomInt,
   getRandomFloat,
   getRandomArrayElement,
   makeRandomArrayGenerator,
-  isEscEvent
+  isEscEvent,
+  getProfileRaiting
 };

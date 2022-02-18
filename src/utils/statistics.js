@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import { durationConverter } from './date';
+import { getDurationMinutes, getDurationHours } from './date.js';
+import { getProfileRaiting } from '../utils/common.js';
 
 export const StatsType = {
   ALL: 'all-time',
@@ -60,12 +61,14 @@ export const getDataStatistics = (films, filterMode) => {
     return result;
   }, { types: [], values: [] });
 
+  const userRank = getProfileRaiting(films);
   const topGenre = genres.types[0] || '';
-  const duration = filmsWatched.reduce((result, film) => (result + film.filmInfo.runtime), 0);
-  const durationHours = durationConverter(duration, 'H');
-  const durationMinutes = durationConverter(duration, 'm');
+  const duration = filmsWatched.reduce((result, film) => (result += film.filmInfo.runtime), 0);
+  const durationHours = getDurationHours(duration);
+  const durationMinutes = getDurationMinutes(duration);
 
   return {
+    userRank,
     durationHours,
     durationMinutes,
     filmsWatched,
