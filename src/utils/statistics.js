@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { durationConverter } from './date';
 
 export const StatsType = {
   ALL: 'all-time',
@@ -24,7 +25,7 @@ export const getDataStatistics = (films, filterMode) => {
       break;
     case StatsType.WEEK:
       filmsWatched = films
-        .filter((film) => film.userDetails.alreadyWatched && dayjs(film.userInfo.watchingDate).isSame(currentDate, 'week'));
+        .filter((film) => film.userDetails.alreadyWatched && dayjs(film.userDetails.watchingDate).isSame(currentDate, 'week'));
       break;
     case StatsType.MONTH:
       filmsWatched = films
@@ -58,5 +59,17 @@ export const getDataStatistics = (films, filterMode) => {
     result.values.push(value);
     return result;
   }, { types: [], values: [] });
-  return { genres };
+
+  const topGenre = genres.types[0] || '';
+  const duration = filmsWatched.reduce((result, film) => (result + film.filmInfo.runtime), 0);
+  const durationHours = durationConverter(duration, 'H');
+  const durationMinutes = durationConverter(duration, 'm');
+
+  return {
+    durationHours,
+    durationMinutes,
+    filmsWatched,
+    topGenre,
+    genres
+  };
 };

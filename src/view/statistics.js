@@ -3,8 +3,6 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getDataStatistics, StatsType } from '../utils/statistics.js';
 
-const BAR_HEIGHT = 50;
-
 const FILTERS = [
   {
     type: StatsType.ALL,
@@ -28,9 +26,8 @@ const FILTERS = [
   }
 ];
 
-const renderStatisticsChart = (statisticCtx, { genres }) => {
-  console.log(genres);
-  return new Chart(statisticCtx, {
+const renderStatisticsChart = (statisticCtx, { genres }) =>
+  new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
@@ -86,7 +83,6 @@ const renderStatisticsChart = (statisticCtx, { genres }) => {
       },
     },
   });
-};
 
 const createFiltersTemplate = (filters, currentFilter) => `
   ${filters.map(({type, name}) => `
@@ -95,7 +91,7 @@ const createFiltersTemplate = (filters, currentFilter) => `
   `).join(' ')}
 `;
 
-const createStatisticsTemplate = (data, filters, currentFilter) => `
+const createStatisticsTemplate = ({ durationHours, durationMinutes, filmsWatched, topGenre }, filters, currentFilter) => `
   <section class="statistic">
     <p class="statistic__rank">
       Your rank
@@ -111,15 +107,15 @@ const createStatisticsTemplate = (data, filters, currentFilter) => `
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
-        <p class="statistic__item-text">28 <span class="statistic__item-description">movies</span></p>
+        <p class="statistic__item-text">${filmsWatched.length} <span class="statistic__item-description">movies</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">69 <span class="statistic__item-description">h</span> 41 <span class="statistic__item-description">m</span></p>
+        <p class="statistic__item-text">${durationHours} <span class="statistic__item-description">h</span> ${durationMinutes} <span class="statistic__item-description">m</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">Drama</p>
+        <p class="statistic__item-text">${ topGenre }</p>
       </li>
     </ul>
     <div class="statistic__chart-wrap">
@@ -142,7 +138,11 @@ export default class Statistics extends SmartView {
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._films, this._filters, this._currentFilter);
+    return createStatisticsTemplate(
+      getDataStatistics(this._films, this._currentFilter),
+      this._filters,
+      this._currentFilter
+    );
   }
 
   restoreHandlers() {
